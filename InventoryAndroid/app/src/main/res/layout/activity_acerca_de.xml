@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <!-- Define tus variables de ViewModel si es necesario -->
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".AcercaDeActivity">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbarlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="AcercaDe"
+                app:navigationIcon="@drawable/arrowback"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/yeray"
+            android:contentDescription="Foto del desarrollador"
+            app:layout_constraintTop_toBottomOf="@id/appbarlayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Desarrollado por [Tu Nombre]\nInformación adicional..."
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/imageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:textSize="16sp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
