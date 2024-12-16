@@ -1,0 +1,44 @@
+package com.example.inventoryandroid
+
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
+
+class BarcodeScanningActivity {
+
+    interface BarcodeScanListener {
+        fun onRawValueDetected(rawValue: String?)
+        fun onBarcodeScanFailed(exception: Exception)
+    }
+
+    fun scanBarcodes(image: InputImage, listener: BarcodeScanListener){
+        val options = BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(
+                Barcode.FORMAT_ALL_FORMATS,
+                Barcode.FORMAT_AZTEC)
+            .build()
+
+        val scanner = BarcodeScanning.getClient()
+
+        val result = scanner.process(image)
+            .addOnSuccessListener { barcodes ->
+                Log.e("MainActivity", "BIEN al detectar códigos de barras: $barcodes")
+                for (barcode in barcodes) {
+                    val bounds = barcode.boundingBox
+                    val corners = barcode.cornerPoints
+                    val rawValue = barcode.rawValue // Asignar el valor de rawValue
+                    val valueType = barcode.valueType
+                    listener.onRawValueDetected(rawValue)
+                    Log.e("MainActivity", "JEJEJEJEJEJEJ $valueType")
+                    Log.e("MainActivity", "JEJEJEJEJEJJEJAJAJAJAJA: $rawValue")
+                }
+            }
+            .addOnFailureListener {
+                Log.e("MainActivity", "Error al detectar códigos de barras: $it")
+                listener.onBarcodeScanFailed(it)
+            }
+    }
+}

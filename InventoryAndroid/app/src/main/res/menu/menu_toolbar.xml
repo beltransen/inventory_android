@@ -6,4 +6,9 @@
         android:icon="@drawable/info_24dp"
         app:showAsAction="ifRoom"
         android:title="TODO" />
+    <item
+        android:id="@+id/añadirProducto"
+        android:icon="@drawable/barcode_scanner_24px"
+        app:showAsAction="ifRoom"
+        android:title="TODO" />
 </menu>
