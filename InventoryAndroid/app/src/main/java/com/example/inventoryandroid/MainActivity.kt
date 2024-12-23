@@ -126,6 +126,7 @@ class MainActivity : AppCompatActivity() {
 
     // Método para parsear la información de contacto desde un código QR en formato vCard
     private fun parsearCodigoBarras(url: String?): Producto? {
+        //Será algo muy parecido a esto pero con la info que nos de el codigo de barras
         if (url.isNullOrEmpty()) {
             return null
         }
@@ -137,7 +138,6 @@ class MainActivity : AppCompatActivity() {
         var email = ""
         var empresa = ""
         var ocupacion = ""
-        var conocidoEn = "\"${localizacion.latitude}, ${localizacion.longitude}\""
 
         for (line in lines) {
             // Analizar cada línea para extraer la información relevante
@@ -174,8 +174,10 @@ class MainActivity : AppCompatActivity() {
 
         // Comprobar si se ha encontrado suficiente información para crear un contacto
         return if (nombre.isNotEmpty() && apellidos.isNotEmpty()) {
-            // Crear y devolver un objeto Contacto
-            Contacto(null, nombre, apellidos, telefono.toIntOrNull() ?: 0, email, empresa, ocupacion, conocidoEn)
+            //TODO
+            // Aqui lo que tendremos que hacer es que si encontramos coincidencia de producto con alguno de la base de datos habria qu eliminar uno
+            //Producto(null, nombre, apellidos, telefono.toIntOrNull() ?: 0, email, empresa, ocupacion, conocidoEn)
+            null
         } else {
             null // Si no se encuentra suficiente información, devolver null
         }
