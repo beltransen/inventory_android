@@ -9,5 +9,5 @@ data class Producto(
     var categoria: Int,            // Correcto si categorizas por números (e.g., IDs de categorías).
     var precio: Float,             // Correcto para manejar precios, aunque Double también podría usarse para mayor precisión.
     var codigoDeBarras: String,    // Correcto, los códigos de barras suelen representarse como String.
-    var cantidadAñadida: Int
+    var cantidadAñadida: Int       //Con este INT representaremos la cantidad de producto que tenemos
 ) : Serializable

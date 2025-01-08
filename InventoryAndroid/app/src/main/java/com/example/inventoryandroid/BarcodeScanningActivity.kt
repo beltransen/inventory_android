@@ -27,8 +27,6 @@ class BarcodeScanningActivity {
             .addOnSuccessListener { barcodes ->
                 Log.e("MainActivity", "BIEN al detectar códigos de barras: $barcodes")
                 for (barcode in barcodes) {
-                    val bounds = barcode.boundingBox
-                    val corners = barcode.cornerPoints
                     val rawValue = barcode.rawValue // Asignar el valor de rawValue
                     val valueType = barcode.valueType
                     listener.onRawValueDetected(rawValue)

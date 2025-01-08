@@ -19,4 +19,10 @@ class ProductoRepository(private val DAO: ProductoDAO)  {
     suspend fun updateProducto(producto: Producto){
         DAO.update(producto.toEntity())
     }
+
+    fun getProductoPorCodigoBarras(codigo: String): Producto? {
+        val productoEntity = DAO.getByCodigoBarras(codigo)
+        return productoEntity?.toDomain()
+    }
+
 }

@@ -26,4 +26,7 @@ interface ProductoDAO {
 
     @Query("SELECT * FROM producto_table WHERE productoId = :id")
     fun getById(id: Int): LiveData<ProductoEntity> // Método para obtener una tarea por su ID
+
+    @Query("SELECT * FROM producto_table WHERE producto_empresa= :codigo")
+    fun getByCodigoBarras(codigo: String): ProductoEntity?
 }
