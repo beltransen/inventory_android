@@ -35,15 +35,8 @@ class MainActivity : AppCompatActivity() {
 
     private val getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val contacto = result.data?.getSerializableExtra("contacto") as Producto
-            val posicion = result.data?.getIntExtra("posicionClick", -1) ?: -1
-
-            if (contacto.productoId != null) {
-                Log.println(Log.DEBUG, "Main", "LLegamos al update contacto = ${contacto}")
-                viewModel.updateProducto(contacto.productoId!!,contacto)
-            } else {
-                Log.println(Log.DEBUG, "Main", "No se recibió un contacto válido o una posición válida")
-            }
+            val producto = result.data?.getSerializableExtra("producto") as Producto
+            viewModel.add_Producto(producto)
         } else {
             Log.println(Log.DEBUG, "Main", "Operación Cancelada")
         }
@@ -80,7 +73,8 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.adapter = miAdaptador
 
         binding.floatingActionButton4.setOnClickListener {
-            obtenerFoto.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
+            val intent = Intent(this, EscanearProductoActivity::class.java)
+            getResult.launch(intent)
         }
 
         val lista_observer = Observer<List<Producto>>{ contacto ->
@@ -142,8 +136,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
         menu?.findItem(R.id.añadirProducto)?.setOnMenuItemClickListener {
-            val intent = Intent(this, AcercaDeActivity::class.java)
-            startActivity(intent)
+            obtenerFoto.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
             true
         }
         return true
