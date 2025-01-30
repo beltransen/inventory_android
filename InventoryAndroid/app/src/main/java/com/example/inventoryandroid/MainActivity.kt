@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -42,6 +43,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val getResult2 = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val producto = result.data?.getSerializableExtra("producto") as Producto
+            // Log para ver el producto recibido
+            Log.d("MainActivity", "Producto recibido: ${producto.nombre}, ID: ${producto.productoId}, Código: ${producto.codigoDeBarras}, Cantidad: ${producto.cantidadAñadida}")
+            if (producto.productoId != null) {
+                Log.println(Log.DEBUG, "Main", "LLegamos al update contacto = ${producto}")
+                viewModel.updateProducto(producto.productoId!!,producto)
+            } else {
+                Log.println(Log.DEBUG, "Main", "No se recibió un contacto válido o una posición válida")
+            }
+        } else {
+            Log.println(Log.DEBUG, "Main", "Operación Cancelada")
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_main)
@@ -58,8 +76,8 @@ class MainActivity : AppCompatActivity() {
             override fun onItemClick(position: Int) {
                 val secondIntent = Intent(applicationContext, DetalleProductoActivity::class.java)
                 secondIntent.putExtra("posicionClick", position)
-                secondIntent.putExtra("contacto", viewModel.getProducto(position))
-                getResult.launch(secondIntent)
+                secondIntent.putExtra("producto", viewModel.getProducto(position))
+                getResult2.launch(secondIntent)
             }
         }, object : RVLongClickEvent {
             override fun onItemLongClick(position: Int): Boolean {
@@ -83,6 +101,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.productos.observe(this, lista_observer)
 
         barcodeScanner = BarcodeScanningActivity()
+        window.statusBarColor = ContextCompat.getColor(this, R.color.black)
+
     }
 
     private val obtenerFoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

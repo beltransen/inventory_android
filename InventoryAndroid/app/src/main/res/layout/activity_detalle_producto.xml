@@ -1,9 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".DetalleProductoActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <data>
+        <!-- Define tus variables de ViewModel si es necesario -->
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".DetalleProductoActivity">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbarlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbarMiperfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                app:titleTextColor="@color/white"
+                app:title="Actualizar Producto"
+                app:navigationIcon="@drawable/arrowback"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Imagen para la vista previa -->
+        <ImageView
+            android:id="@+id/ImagenPreview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="16dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_placeholder_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbarlayout" />
+
+
+        <!-- Campo de texto para el nombre -->
+        <EditText
+            android:id="@+id/NombreProducto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Nombre"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ImagenPreview" />
+
+
+
+        <Spinner
+            android:id="@+id/Categoria"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:entries="@array/categorias"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/NombreProducto"  />
+
+        <EditText
+            android:id="@+id/Precio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Precio"
+            android:inputType="numberDecimal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/Categoria" />
+
+        <EditText
+            android:id="@+id/Codigo_barras"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Código de barras"
+            app:layout_constraintEnd_toStartOf="@+id/botonEscanearCodigo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/Precio" />
+
+        <Button
+            android:id="@+id/botonEscanearCodigo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Escanear"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/Codigo_barras"
+            app:backgroundTint="#00AEEF" />
+
+        <EditText
+            android:id="@+id/Cantidad"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Cantidad"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/Codigo_barras" />
+
+        <Button
+            android:id="@+id/botonCancelUsuario"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Cancelar"
+            app:layout_constraintEnd_toStartOf="@id/botonSaveUsuario"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/Cantidad"
+            app:backgroundTint="#00AEEF" />
+
+        <Button
+            android:id="@+id/botonSaveUsuario"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Guardar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/botonCancelUsuario"
+            app:layout_constraintTop_toBottomOf="@id/Cantidad"
+            app:backgroundTint="#00AEEF" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -59,9 +59,8 @@ class ListaProductosViewModel(context: Context): ViewModel() {
         return productos.value?.size ?: 0
     }
 
-    fun updateProducto(index: Int, producto: Producto){
+    fun updateProducto(index: Int,producto: Producto) {
         viewModelScope.launch(Dispatchers.IO) {
-            productosRepository.updateProducto(producto)
-        }
+            productosRepository.updateProducto(producto) }
     }
 }

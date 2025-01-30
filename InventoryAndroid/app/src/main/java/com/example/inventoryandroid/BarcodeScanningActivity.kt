@@ -17,8 +17,9 @@ class BarcodeScanningActivity {
     fun scanBarcodes(image: InputImage, listener: BarcodeScanListener){
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(
-                Barcode.FORMAT_ALL_FORMATS,
-                Barcode.FORMAT_AZTEC)
+                Barcode.FORMAT_CODE_128,
+                Barcode.FORMAT_EAN_13,
+                Barcode.FORMAT_EAN_8)
             .build()
 
         val scanner = BarcodeScanning.getClient()

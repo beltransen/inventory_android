@@ -22,11 +22,27 @@
                 android:id="@+id/toolbarMiperfil"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/black"
+                app:titleTextColor="@color/white"
                 app:title="Nuevo Producto"
                 app:navigationIcon="@drawable/arrowback"
                 style="@style/Widget.MaterialComponents.Toolbar.Primary" />
         </com.google.android.material.appbar.AppBarLayout>
 
+        <!-- Imagen para la vista previa -->
+        <ImageView
+            android:id="@+id/ImagenPreview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="16dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_placeholder_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbarlayout" />
+
+
+        <!-- Campo de texto para el nombre -->
         <EditText
             android:id="@+id/NombreProducto"
             android:layout_width="0dp"
@@ -34,40 +50,26 @@
             android:hint="Nombre"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/appbarlayout" />
+            app:layout_constraintTop_toBottomOf="@id/ImagenPreview" />
 
-        <EditText
-            android:id="@+id/Foto"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Foto"
-            app:layout_constraintEnd_toStartOf="@+id/botonSeleccionarFoto"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/NombreProducto" />
 
-        <Button
-            android:id="@+id/botonSeleccionarFoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Seleccionar Foto"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/Foto"
-            app:layout_constraintTop_toTopOf="@id/Foto" />
 
-        <EditText
+        <Spinner
             android:id="@+id/Categoria"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Categoria"
+            android:layout_marginTop="16dp"
+            android:entries="@array/categorias"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/Foto" />
+            app:layout_constraintTop_toBottomOf="@id/NombreProducto"  />
 
         <EditText
             android:id="@+id/Precio"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Precio"
+            android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/Categoria" />
@@ -87,13 +89,15 @@
             android:layout_height="wrap_content"
             android:text="Escanear"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/Codigo_barras" />
+            app:layout_constraintTop_toTopOf="@id/Codigo_barras"
+            app:backgroundTint="#00AEEF" />
 
         <EditText
             android:id="@+id/Cantidad"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Cantidad"
+            android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/Codigo_barras" />
@@ -105,7 +109,8 @@
             android:text="Cancelar"
             app:layout_constraintEnd_toStartOf="@id/botonSaveUsuario"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/Cantidad" />
+            app:layout_constraintTop_toBottomOf="@id/Cantidad"
+            app:backgroundTint="#00AEEF" />
 
         <Button
             android:id="@+id/botonSaveUsuario"
@@ -114,17 +119,7 @@
             android:text="Guardar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/botonCancelUsuario"
-            app:layout_constraintTop_toBottomOf="@id/Cantidad" />
-
-        <ImageView
-            android:id="@+id/ImagenPreview"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_placeholder_image"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/Cantidad" />
+            app:layout_constraintTop_toBottomOf="@id/Cantidad"
+            app:backgroundTint="#00AEEF" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

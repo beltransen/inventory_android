@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">InventoryAndroid</string>
+    <string-array name="categorias">
+        <item>Electrónica</item>
+        <item>Hogar</item>
+        <item>Ropa</item>
+        <item>Alimentos</item>
+    </string-array>
 </resources>

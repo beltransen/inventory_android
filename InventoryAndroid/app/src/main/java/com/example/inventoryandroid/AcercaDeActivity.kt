@@ -2,6 +2,7 @@ package com.example.inventoryandroid
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.example.inventoryandroid.databinding.ActivityAcercaDeBinding
 
@@ -14,6 +15,7 @@ class AcercaDeActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_acerca_de)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        window.statusBarColor = ContextCompat.getColor(this, R.color.black)
     }
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
