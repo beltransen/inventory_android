@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Grupo para la búsqueda -->
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/buscarProducto"
+            android:title="Buscar Producto"
+            android:icon="@android:drawable/ic_menu_search" />
+    </group>
+
+    <!-- Grupo para organizar por categorías -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/organizarPorCategoria"
+            android:title="Organizar por Categorías"
+            android:icon="@android:drawable/ic_menu_sort_by_size"/>
+    </group>
+
+</menu>

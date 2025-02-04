@@ -37,25 +37,6 @@ class EscanearProductoActivity : AppCompatActivity() {
         "Alimentos" to 4
     )
 
-
-    // Lanzador para seleccionar una foto de la galería
-    private val seleccionarFoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val uri = result.data?.data // URI de la imagen seleccionada
-            if (uri != null) {
-                // Establece la URI en el campo de texto
-                fotoUri = uri.toString()
-
-                // Cambia el comportamiento del ImageView para ajustar la imagen al espacio disponible
-                binding.ImagenPreview.scaleType = ImageView.ScaleType.FIT_CENTER
-                binding.ImagenPreview.setImageURI(uri) // Muestra la vista previa de la imagen
-            } else {
-                Toast.makeText(this, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_escanear_producto)
@@ -63,6 +44,11 @@ class EscanearProductoActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         barcodeScanner = BarcodeScanningActivity()
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        }
 
 
         // Configura el Spinner con un adaptador dinámico si no usas android:entries
@@ -117,11 +103,12 @@ class EscanearProductoActivity : AppCompatActivity() {
             val opciones = arrayOf("Seleccionar desde galería", "Tomar una foto")
             val builder = androidx.appcompat.app.AlertDialog.Builder(this)
             builder.setTitle("Elige una opción")
-            builder.setItems(opciones) { dialog, which ->
+            builder.setItems(opciones) { _, which ->
                 when (which) {
                     0 -> {
                         // Seleccionar desde galería
                         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                        intent.type = "image/*"
                         seleccionarFoto.launch(intent)
                     }
                     1 -> {
@@ -154,6 +141,28 @@ class EscanearProductoActivity : AppCompatActivity() {
             }
         }
     }
+
+    private val seleccionarFoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uri = result.data?.data // URI de la imagen seleccionada
+            if (uri != null) {
+                try {
+                    val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri) // Convertir URI a Bitmap
+                    binding.ImagenPreview.scaleType = ImageView.ScaleType.FIT_CENTER
+                    binding.ImagenPreview.setImageBitmap(bitmap) // Muestra la vista previa de la imagen
+
+                    // Guardar la URI en la variable
+                    fotoUri = uri.toString()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     private val obtenerCodigo = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         Log.e("MainActivity", "JOJOJJOJOJOJOJ")

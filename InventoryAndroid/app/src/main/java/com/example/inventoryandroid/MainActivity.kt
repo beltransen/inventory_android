@@ -11,12 +11,14 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +26,7 @@ import com.example.inventoryandroid.databinding.ActivityMainBinding
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.android.material.navigation.NavigationView
 import com.google.mlkit.vision.common.InputImage
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +35,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: ListaProductosViewModel
     lateinit var miAdaptador: AdaptadorElementos // Adaptador para el RecyclerView
     private lateinit var barcodeScanner: BarcodeScanningActivity
+    private lateinit var navView: NavigationView
+    private lateinit var drawerLayout:DrawerLayout
 
 
     private val getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -71,6 +76,8 @@ class MainActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         barcodeScanner = BarcodeScanningActivity()
+        navView = binding.navigationView
+        drawerLayout = binding.drawerLayout
 
         miAdaptador = AdaptadorElementos(viewModel.productos.value ?: mutableListOf(), object : RVClickEvent {
             override fun onItemClick(position: Int) {
@@ -146,6 +153,13 @@ class MainActivity : AppCompatActivity() {
         menu?.findItem(R.id.añadirProducto)?.setOnMenuItemClickListener {
             obtenerFoto.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
             true
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home->drawerLayout.open()
         }
         return true
     }
