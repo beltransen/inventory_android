@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Grupo para la búsqueda -->
     <group android:checkableBehavior="none">
@@ -10,11 +11,33 @@
     </group>
 
     <!-- Grupo para organizar por categorías -->
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="none">
         <item
             android:id="@+id/organizarPorCategoria"
-            android:title="Organizar por Categorías"
-            android:icon="@android:drawable/ic_menu_sort_by_size"/>
+            android:title="Organizar por categoría"
+            android:icon="@drawable/filterlist">
+            <!-- Submenú desplegable -->
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/categoria_todas"
+                        android:title="Todasss" />
+                    <item
+                        android:id="@+id/categoria_electronica"
+                        android:title="Electrónica" />
+                    <item
+                        android:id="@+id/categoria_ropa"
+                        android:title="Ropa" />
+                    <item
+                        android:id="@+id/categoria_alimentos"
+                        android:title="Alimentos" />
+
+                    <item
+                        android:id="@+id/categoria_hogar"
+                        android:title="Hogar" />
+                </group>
+            </menu>
+        </item>
     </group>
 
 </menu>

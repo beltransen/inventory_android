@@ -131,11 +131,32 @@ class DetalleProductoActivity : AppCompatActivity() {
 
     private val seleccionarFoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.data?.let {
-                fotoUri = it.toString()
-                binding.ImagenPreview.setImageURI(it)
-            } ?: Toast.makeText(this, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show()
+            val uri = result.data?.data // URI de la imagen seleccionada
+            if (uri != null) {
+                try {
+                    val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri) // Convertir URI a Bitmap
+                    binding.ImagenPreview.scaleType = ImageView.ScaleType.FIT_CENTER
+                    binding.ImagenPreview.setImageBitmap(bitmap) // Muestra la vista previa de la imagen
+
+                    // Guardar el bitmap en almacenamiento interno
+                    val nuevaUri = saveImageToInternalStorage(bitmap)
+                    fotoUri = nuevaUri.toString()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
+
+    private fun saveImageToInternalStorage(bitmap: Bitmap): Uri {
+        val file = File(filesDir, "image_${System.currentTimeMillis()}.jpg")
+        file.outputStream().use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
+        }
+        return Uri.fromFile(file)
     }
 
     private val obtenerFoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

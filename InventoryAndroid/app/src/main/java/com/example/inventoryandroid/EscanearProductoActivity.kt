@@ -151,8 +151,9 @@ class EscanearProductoActivity : AppCompatActivity() {
                     binding.ImagenPreview.scaleType = ImageView.ScaleType.FIT_CENTER
                     binding.ImagenPreview.setImageBitmap(bitmap) // Muestra la vista previa de la imagen
 
-                    // Guardar la URI en la variable
-                    fotoUri = uri.toString()
+                    // Guardar el bitmap en almacenamiento interno
+                    val nuevaUri = saveImageToInternalStorage(bitmap)
+                    fotoUri = nuevaUri.toString()
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show()
@@ -161,6 +162,14 @@ class EscanearProductoActivity : AppCompatActivity() {
                 Toast.makeText(this, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun saveImageToInternalStorage(bitmap: Bitmap): Uri {
+        val file = File(filesDir, "image_${System.currentTimeMillis()}.jpg")
+        file.outputStream().use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
+        }
+        return Uri.fromFile(file)
     }
 
 

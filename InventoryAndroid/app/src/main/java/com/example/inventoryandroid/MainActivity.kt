@@ -12,8 +12,11 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -37,6 +40,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var barcodeScanner: BarcodeScanningActivity
     private lateinit var navView: NavigationView
     private lateinit var drawerLayout:DrawerLayout
+
+    private val categoriasMap = mapOf(
+        "Electrónica" to 1,
+        "Hogar" to 2,
+        "Ropa" to 3,
+        "Alimentos" to 4
+    )
 
 
     private val getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -79,6 +89,26 @@ class MainActivity : AppCompatActivity() {
         navView = binding.navigationView
         drawerLayout = binding.drawerLayout
 
+        // Configurar el SearchView
+        val searchView = binding.searchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filter(newText)
+                return true
+            }
+        })
+
+        // Configurar el ícono de cierre para ocultar el SearchView
+        val closeButton = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+        closeButton.setOnClickListener {
+            searchView.setQuery("", false) // Limpiar la búsqueda
+            searchView.visibility = View.GONE // Ocultar el SearchView
+        }
+
         miAdaptador = AdaptadorElementos(viewModel.productos.value ?: mutableListOf(), object : RVClickEvent {
             override fun onItemClick(position: Int) {
                 val secondIntent = Intent(applicationContext, DetalleProductoActivity::class.java)
@@ -110,6 +140,43 @@ class MainActivity : AppCompatActivity() {
         barcodeScanner = BarcodeScanningActivity()
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
 
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.buscarProducto -> {
+                    searchView.visibility = View.VISIBLE
+                    searchView.isIconified = false
+                    drawerLayout.closeDrawer(navView)
+                    true
+                }
+                R.id.categoria_todas -> {
+                    filterByCategory(null) // Muestra todos los productos
+                    drawerLayout.closeDrawer(navView)
+                    true
+                }
+                R.id.categoria_electronica -> {
+                    filterByCategory(categoriasMap["Electrónica"]) // Electrónica (1)
+                    drawerLayout.closeDrawer(navView)
+                    true
+                }
+                R.id.categoria_hogar -> {
+                    filterByCategory(categoriasMap["Hogar"]) // Hogar (2)
+                    drawerLayout.closeDrawer(navView)
+                    true
+                }
+                R.id.categoria_ropa -> {
+                    filterByCategory(categoriasMap["Ropa"]) // Ropa (3)
+                    drawerLayout.closeDrawer(navView)
+                    true
+                }
+                R.id.categoria_alimentos -> {
+                    filterByCategory(categoriasMap["Alimentos"]) // Alimentos (4)
+                    drawerLayout.closeDrawer(navView)
+                    true
+                }
+                else -> false
+            }
+        }
+
     }
 
     private val obtenerFoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -121,6 +188,27 @@ class MainActivity : AppCompatActivity() {
 
             procesarImagen(imageBitmap)
         }
+    }
+
+    private fun filterByCategory(categoryId: Int?) {
+        val filteredList = if (categoryId == null) {
+            viewModel.productos.value ?: emptyList() // Mostrar todos los productos
+        } else {
+            viewModel.productos.value?.filter { producto ->
+                producto.categoria == categoryId
+            } ?: emptyList()
+        }
+
+        miAdaptador.setProductos(filteredList) // Actualizar el RecyclerView con la lista filtrada
+    }
+
+    private fun filter(text: String) {
+        val filteredList = viewModel.productos.value?.filter { producto ->
+            producto.nombre.contains(text, ignoreCase = true) || producto.codigoDeBarras.contains(text, ignoreCase = true)
+        } ?: emptyList()
+
+        // Actualizar el adaptador con la lista filtrada
+        miAdaptador.setProductos(filteredList)
     }
 
     private fun procesarImagen(imageBitmap: Bitmap) {
@@ -158,9 +246,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->drawerLayout.open()
+        when (item.itemId) {
+            android.R.id.home -> {
+                if (drawerLayout.isDrawerOpen(navView)) {
+                    drawerLayout.closeDrawer(navView)
+                } else {
+                    drawerLayout.openDrawer(navView)
+                }
+                return true
+            }
         }
-        return true
+        return super.onOptionsItemSelected(item)
     }
 }
