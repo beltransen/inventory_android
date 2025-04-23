@@ -9,9 +9,11 @@ def create_table():
         CREATE TABLE IF NOT EXISTS productos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
+            foto TEXT NOT NULL,
             precio REAL NOT NULL,
             categoria TEXT,
-            cantidad INTEGER NOT NULL
+            cantidadAñadida INTEGER NOT NULL,
+            codigoDeBarras TEXT NOT NULL
         )
     ''')
 

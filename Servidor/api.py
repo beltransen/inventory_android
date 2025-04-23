@@ -42,10 +42,11 @@ def update_producto(producto_id: int, producto: dict):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("""
-    UPDATE productos
-    SET nombre = ?, foto = ?, categoria = ?, precio = ?, codigoDeBarras = ?, cantidadAñadida = ?
-    WHERE productoId = ?
-    """, (producto["nombre"], producto["foto"], producto["categoria"], producto["precio"], producto["codigoDeBarras"], producto["cantidadAñadida"], producto_id))
+        UPDATE productos
+        SET nombre = ?, foto = ?, categoria = ?, precio = ?, codigoDeBarras = ?, cantidadAñadida = ?
+        WHERE id = ?
+    """, (producto["nombre"], producto["foto"], producto["categoria"], producto["precio"], producto["codigoDeBarras"],
+          producto["cantidadAñadida"], producto_id))
     conn.commit()
     conn.close()
     return producto
@@ -55,7 +56,7 @@ def update_producto(producto_id: int, producto: dict):
 def delete_producto(producto_id: int):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM productos WHERE productoId = ?", (producto_id,))
+    cursor.execute("DELETE FROM productos WHERE id = ?", (producto_id,))
     conn.commit()
     conn.close()
     return {"message": "Producto eliminado"}
