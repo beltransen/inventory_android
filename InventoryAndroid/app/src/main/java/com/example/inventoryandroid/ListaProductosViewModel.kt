@@ -14,7 +14,8 @@ class ListaProductosViewModel(context: Context): ViewModel() {
 
     init {
         val myDAO = ProductosRoomDatabase.getInstance(context).productoDAO() // Inicializar DAO
-        productosRepository = ProductoRepository(myDAO)
+        val apiService = RetrofitInstance.api // Retrofit configurado
+        productosRepository = ProductoRepository(myDAO, apiService)
         productos = productosRepository.getAllProductos()// Asociamos la lista con la tabla de Peliculas de la BBDD
 
     }

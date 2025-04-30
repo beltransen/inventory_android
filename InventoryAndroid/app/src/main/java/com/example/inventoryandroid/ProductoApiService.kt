@@ -6,19 +6,19 @@ import retrofit2.http.*
 interface ProductoApiService {
 
     @GET("productos/")
-    suspend fun getAll(): List<Producto>
+    suspend fun getAll(): List<ProductoDTO>
 
     @GET("productos/{id}")
-    suspend fun getById(@Path("id") id: Int): Producto
+    suspend fun getById(@Path("id") id: Int): ProductoDTO
 
     @GET("productos/codigo/{codigo}")
-    suspend fun getByCodigoBarras(@Path("codigo") codigo: String): Producto?
+    suspend fun getByCodigoBarras(@Path("codigo") codigo: String): ProductoDTO?
 
     @POST("productos/")
-    suspend fun insert(@Body producto: Producto): Producto
+    suspend fun insert(@Body producto: ProductoDTO)
 
     @PUT("productos/{id}")
-    suspend fun update(@Path("id") id: Int, @Body producto: Producto): Producto
+    suspend fun update(@Path("id") id: Int, @Body producto: ProductoDTO): Producto
 
     @DELETE("productos/{id}")
     suspend fun delete(@Path("id") id: Int)

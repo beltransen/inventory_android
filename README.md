@@ -2,6 +2,16 @@
 Aplicación Android para control de inventario en una tienda (TFG de Yeray Terradillos)
 
 ##Para lanzar el servidor.
+instalaciones necesarias:
+
+En terminal de linux instalamos curl.
+  sudo apt-get install curl
+
+En el entorno virtual del proyecto, no se si tendras que instalarlos o vendran ya por estar en entorno virtual
+  pip install uvicorn
+  pip install fastapi 
+  pip install sqlite3
+  
 
 He creado un entorno virtual y desde pycharm desde el proyecto hago lo siguiente.
 
