@@ -14,7 +14,7 @@ interface ProductoApiService {
     @GET("productos/codigo/{codigo}")
     suspend fun getByCodigoBarras(@Path("codigo") codigo: String): ProductoDTO?
 
-    @POST("productos/")
+    @POST("productos")
     suspend fun insert(@Body producto: ProductoDTO)
 
     @PUT("productos/{id}")

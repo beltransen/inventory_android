@@ -1,5 +1,6 @@
 package com.example.inventoryandroid
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 
@@ -8,19 +9,37 @@ class ProductoRepository(private val DAO: ProductoDAO, private val API: Producto
         listaProductos.map { it.toDomain() }
     }
 
+
     suspend fun addProducto(productoEntity: ProductoEntity) {
         DAO.insert(productoEntity)
-        API.insert(productoEntity.toDomain().toDTO()) // Remoto
+        try {
+            API.insert(productoEntity.toDomain().toDTO())
+        } catch (e: Exception) {
+            Log.e("ProductoRepository", "Error insertando en API", e)
+        }
     }
 
     suspend fun delProducto(productoEntity: ProductoEntity) {
         DAO.delete(productoEntity)
-        //productoEntity.productoId?.let { API.delete(it) } // Remoto
+        productoEntity.productoId?.let {
+            try {
+                Log.d("ProductoRepository", "Intentando borrar producto remoto con ID: $it")
+                API.delete(it)
+            } catch (e: Exception) {
+                Log.e("ProductoRepository", "Error borrando en API", e)
+            }
+        }
     }
 
-    suspend fun updateProducto(producto: Producto){
+    suspend fun updateProducto(producto: Producto) {
         DAO.update(producto.toEntity())
-        //producto.productoId?.let { API.update(it, producto.toDTO()) } // Remoto
+        producto.productoId?.let {
+            try {
+                API.update(it, producto.toDTO())
+            } catch (e: Exception) {
+                Log.e("ProductoRepository", "Error actualizando en API", e)
+            }
+        }
     }
 
     fun getProductoPorCodigoBarras(codigo: String): Producto? {

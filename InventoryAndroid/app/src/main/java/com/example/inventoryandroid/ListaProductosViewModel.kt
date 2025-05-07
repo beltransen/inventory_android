@@ -13,11 +13,11 @@ class ListaProductosViewModel(context: Context): ViewModel() {
     val productos: LiveData<List<Producto>>
 
     init {
+
         val myDAO = ProductosRoomDatabase.getInstance(context).productoDAO() // Inicializar DAO
         val apiService = RetrofitInstance.api // Retrofit configurado
         productosRepository = ProductoRepository(myDAO, apiService)
         productos = productosRepository.getAllProductos()// Asociamos la lista con la tabla de Peliculas de la BBDD
-
     }
 
     fun add_Producto(tarea: Producto?){
