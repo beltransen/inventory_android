@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "producto_table")
 data class ProductoEntity (
-    @PrimaryKey(autoGenerate = true)
-    val productoId: Int? = null,
+    @PrimaryKey
+    val productoId: Long,  // Ahora es la clave primaria
     @ColumnInfo(name = "producto_nombre")
     val nombre: String,
     @ColumnInfo(name = "producto_apellidos")
@@ -16,8 +16,8 @@ data class ProductoEntity (
     var categoria: Int,
     @ColumnInfo(name = "producto_email")
     var precio: Float,
-    @ColumnInfo(name = "producto_empresa")
-    var codigoDeBarras: String,
     @ColumnInfo(name = "producto_organizacion")
-    var cantidadAñadida:Int
+    var cantidadAñadida: Int,
+    @ColumnInfo(name = "producto_ultima_actualizacion")
+    var ultimaActualizacion: Long
 )

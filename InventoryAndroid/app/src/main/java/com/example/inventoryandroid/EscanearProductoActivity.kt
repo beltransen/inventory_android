@@ -1,6 +1,7 @@
 package com.example.inventoryandroid
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -37,6 +38,7 @@ class EscanearProductoActivity : AppCompatActivity() {
         "Alimentos" to 4
     )
 
+    @SuppressLint("IntentReset")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_escanear_producto)
@@ -84,15 +86,22 @@ class EscanearProductoActivity : AppCompatActivity() {
             // Validaciones de campos vacíos y tipos
             val precioFloat = precio.toFloatOrNull()
             val cantidadInt = cantidad.toIntOrNull()
+            val productoId = codigoBarras.toLongOrNull()
 
             if (nombre.isEmpty() || fotoUri.isNullOrEmpty() || categoriaId == 0 ||
-                precio.isEmpty() || precioFloat == null ||
-                codigoBarras.isEmpty() ||
-                cantidad.isEmpty() || cantidadInt == null) {
+                precioFloat == null || cantidadInt == null || productoId == null) {
                 Toast.makeText(this, "Todos los campos deben estar rellenos correctamente", Toast.LENGTH_SHORT).show()
             } else {
-                // Si todo está bien, crea el producto
-                val producto = Producto(null, nombre, fotoUri ?: "", categoriaId, precioFloat, codigoBarras, cantidadInt)
+                // Si todoo está bien, crea el producto CHEEEEEEEEEEEEEEEEEEEEEEEECK
+                val producto = Producto(
+                    productoId = productoId, // Si se ha escaneado un código válido
+                    nombre = nombre,
+                    foto = fotoUri ?: "",
+                    categoria = categoriaId,
+                    precio = precioFloat,
+                    cantidadAñadida = cantidadInt,
+                    ultimaActualizacion = System.currentTimeMillis()
+                )
                 intent.putExtra("producto", producto)
                 setResult(Activity.RESULT_OK, intent)
                 finish()

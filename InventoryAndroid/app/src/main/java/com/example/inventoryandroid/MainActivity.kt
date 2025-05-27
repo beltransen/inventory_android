@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var barcodeScanner: BarcodeScanningActivity
     private lateinit var navView: NavigationView
     private lateinit var drawerLayout:DrawerLayout
+    private lateinit var networkReceiver: NetworkChangeReceiver
 
     private val categoriasMap = mapOf(
         "Electrónica" to 1,
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             val producto = result.data?.getSerializableExtra("producto") as Producto
             // Log para ver el producto recibido
-            Log.d("MainActivity", "Producto recibido: ${producto.nombre}, ID: ${producto.productoId}, Código: ${producto.codigoDeBarras}, Cantidad: ${producto.cantidadAñadida}")
+            Log.d("MainActivity", "Producto recibido: ${producto.nombre}, Código: ${producto.productoId}, Cantidad: ${producto.cantidadAñadida}")
             if (producto.productoId != null) {
                 Log.println(Log.DEBUG, "Main", "LLegamos al update contacto = ${producto}")
                 viewModel.updateProducto(producto.productoId!!,producto)
@@ -177,6 +178,28 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Registrar el receptor de red
+        networkReceiver = NetworkChangeReceiver { isConnected ->
+            if (isConnected) {
+                Log.d("NetworkChange", "Conectado a internet")
+                Toast.makeText(this, "Conectado a Internet", Toast.LENGTH_SHORT).show()
+
+                // Llama a setConnectionState y sincronizarBidireccional
+                viewModel.setConexionActiva(true)
+                viewModel.sincronizarConServidor()
+            } else {
+                Log.d("NetworkChange", "Sin conexión")
+                Toast.makeText(this, "Sin conexión a Internet", Toast.LENGTH_SHORT).show()
+                viewModel.setConexionActiva(false)
+            }
+
+            // Opcional: actualizar estado en el ViewModel si lo necesitas
+            viewModel.setConexionActiva(isConnected)
+        }
+
+        val filter = android.content.IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(networkReceiver, filter)
+
     }
 
     private val obtenerFoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -204,7 +227,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun filter(text: String) {
         val filteredList = viewModel.productos.value?.filter { producto ->
-            producto.nombre.contains(text, ignoreCase = true) || producto.codigoDeBarras.contains(text, ignoreCase = true)
+            producto.nombre.contains(text, ignoreCase = true) || producto.productoId?.toString()?.contains(text, ignoreCase = true) == true
+
         } ?: emptyList()
 
         // Actualizar el adaptador con la lista filtrada
@@ -218,7 +242,7 @@ class MainActivity : AppCompatActivity() {
             override fun onRawValueDetected(rawValue: String?) {
                 if (rawValue != null) {
                     Log.e("MainActivity", "ALGO ES ALGO")
-                    viewModel.restProducto(rawValue)
+                    viewModel.restProducto(rawValue.toLong())
                 } else {
                     Log.e("MainActivity", "Código de barras no detectado o inválido")
                 }

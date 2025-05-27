@@ -51,7 +51,7 @@ class DetalleProductoActivity : AppCompatActivity() {
         if (producto != null && position != -1) {
             binding.NombreProducto.setText(producto.nombre)
             binding.Precio.setText(producto.precio.toString())
-            binding.CodigoBarras.setText(producto.codigoDeBarras)
+            binding.CodigoBarras.setText(producto.productoId?.toString() ?: "")
             binding.Cantidad.setText(producto.cantidadAñadida.toString())
 
             fotoUri = producto.foto
@@ -93,22 +93,23 @@ class DetalleProductoActivity : AppCompatActivity() {
         val categoriaId = categoriasMap[binding.Categoria.selectedItem.toString()] ?: 0
         val precioFloat = binding.Precio.text.toString().toFloatOrNull()
         val cantidadInt = binding.Cantidad.text.toString().toIntOrNull()
-        val codigoBarras = binding.CodigoBarras.text.toString()
+        val productoId = binding.CodigoBarras.text.toString().toLongOrNull()
+
 
         if (nombre.isEmpty() || fotoUri.isNullOrEmpty() || categoriaId == 0 ||
-            precioFloat == null || codigoBarras.isEmpty() || cantidadInt == null) {
+            precioFloat == null || productoId == null || cantidadInt == null) {
             Toast.makeText(this, "Todos los campos deben estar rellenos correctamente", Toast.LENGTH_SHORT).show()
             return
         }
 
         val nuevoProducto = Producto(
-            producto?.productoId,
-            nombre,
-            fotoUri ?: "",
-            categoriaId,
-            precioFloat,
-            codigoBarras,
-            cantidadInt
+            productoId = productoId,
+            nombre = nombre,
+            foto = fotoUri ?: "",
+            categoria = categoriaId,
+            precio = precioFloat,
+            cantidadAñadida = cantidadInt,
+            ultimaActualizacion = System.currentTimeMillis()
         )
 
         intent.putExtra("producto", nuevoProducto)

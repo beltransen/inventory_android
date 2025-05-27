@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 class ListaProductosViewModel(context: Context): ViewModel() {
     private val productosRepository : ProductoRepository
     val productos: LiveData<List<Producto>>
+    private var conexionActiva = true
 
     init {
 
@@ -23,6 +24,7 @@ class ListaProductosViewModel(context: Context): ViewModel() {
     fun add_Producto(tarea: Producto?){
         viewModelScope.launch(Dispatchers.IO) {
             if (tarea != null) {
+                tarea.ultimaActualizacion = System.currentTimeMillis() // <-- AÑADIR ESTO SI NO LO HACES YA
                 productosRepository.addProducto(tarea.toEntity())
             }
         }
@@ -35,9 +37,9 @@ class ListaProductosViewModel(context: Context): ViewModel() {
         }
     }
 
-    fun restProducto(codigoBarras: String) {
+    fun restProducto(codigoBarras: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            val producto = productosRepository.getProductoPorCodigoBarras(codigoBarras)
+            val producto = productosRepository.getProductoPorCodigoBarras(codigoBarras.toString())
             if (producto != null) {
                 if (producto.cantidadAñadida > 0) {
                     producto.cantidadAñadida -= 1
@@ -60,8 +62,22 @@ class ListaProductosViewModel(context: Context): ViewModel() {
         return productos.value?.size ?: 0
     }
 
-    fun updateProducto(index: Int,producto: Producto) {
+    fun updateProducto(index: Long,producto: Producto) {
         viewModelScope.launch(Dispatchers.IO) {
             productosRepository.updateProducto(producto) }
+    }
+
+    fun setConexionActiva(conectado: Boolean) {
+        conexionActiva = conectado
+    }
+
+    fun isConexionActiva(): Boolean {
+        return conexionActiva
+    }
+
+    fun sincronizarConServidor() {
+        viewModelScope.launch(Dispatchers.IO) {
+            productosRepository.sincronizarBidireccional()
+        }
     }
 }

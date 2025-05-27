@@ -7,14 +7,14 @@ def create_table():
     # Crear la tabla 'productos' si no existe
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS productos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
-            foto TEXT NOT NULL,
-            precio REAL NOT NULL,
-            categoria TEXT,
-            cantidadAñadida INTEGER NOT NULL,
-            codigoDeBarras TEXT NOT NULL
-        )
+        id INTEGER PRIMARY KEY,  -- código de barras (long)
+        nombre TEXT NOT NULL,
+        foto TEXT NOT NULL,
+        precio REAL NOT NULL,
+        categoria INTEGER NOT NULL,
+        cantidadAñadida INTEGER NOT NULL,
+        ultimaActualizacion INTEGER NOT NULL  -- timestamp en long
+    )
     ''')
 
     conn.commit()

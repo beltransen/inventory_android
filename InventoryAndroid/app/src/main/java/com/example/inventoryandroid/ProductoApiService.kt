@@ -18,8 +18,8 @@ interface ProductoApiService {
     suspend fun insert(@Body producto: ProductoDTO)
 
     @PUT("productos/{id}")
-    suspend fun update(@Path("id") id: Int, @Body producto: ProductoDTO): Producto
+    suspend fun update(@Path("id") id: Long, @Body producto: ProductoDTO): Producto
 
     @DELETE("productos/{id}")
-    suspend fun delete(@Path("id") id: Int)
+    suspend fun delete(@Path("id") id: Long)
 }

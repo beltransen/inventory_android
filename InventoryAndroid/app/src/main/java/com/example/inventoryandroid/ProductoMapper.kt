@@ -7,8 +7,8 @@ fun ProductoEntity.toDomain(): Producto {
         foto = this.foto,
         categoria = this.categoria,
         precio = this.precio,
-        codigoDeBarras = this.codigoDeBarras,
-        cantidadAñadida = this.cantidadAñadida
+        cantidadAñadida = this.cantidadAñadida,
+        ultimaActualizacion = this.ultimaActualizacion
     )
 }
 
@@ -19,8 +19,8 @@ fun Producto.toEntity(): ProductoEntity {
         foto = this.foto,
         categoria = this.categoria,
         precio = this.precio,
-        codigoDeBarras = this.codigoDeBarras,
-        cantidadAñadida = this.cantidadAñadida
+        cantidadAñadida = this.cantidadAñadida,
+        ultimaActualizacion = this.ultimaActualizacion
     )
 }
 
@@ -31,8 +31,8 @@ fun ProductoDTO.toDomain(): Producto {
         foto = this.foto,
         categoria = this.categoria,
         precio = this.precio,
-        codigoDeBarras = this.codigoDeBarras,
-        cantidadAñadida = this.cantidadAñadida
+        cantidadAñadida = this.cantidadAñadida,
+        ultimaActualizacion = this.ultimaActualizacion
     )
 }
 
@@ -43,8 +43,8 @@ fun Producto.toDTO(): ProductoDTO {
         foto = this.foto,
         categoria = this.categoria,
         precio = this.precio,
-        codigoDeBarras = this.codigoDeBarras,
-        cantidadAñadida = this.cantidadAñadida
+        cantidadAñadida = this.cantidadAñadida,
+        ultimaActualizacion = this.ultimaActualizacion
     )
 }
 
