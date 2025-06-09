@@ -8,7 +8,8 @@ fun ProductoEntity.toDomain(): Producto {
         categoria = this.categoria,
         precio = this.precio,
         cantidadAñadida = this.cantidadAñadida,
-        ultimaActualizacion = this.ultimaActualizacion
+        ultimaActualizacion = this.ultimaActualizacion,
+        activo = this.activo
     )
 }
 
@@ -20,7 +21,8 @@ fun Producto.toEntity(): ProductoEntity {
         categoria = this.categoria,
         precio = this.precio,
         cantidadAñadida = this.cantidadAñadida,
-        ultimaActualizacion = this.ultimaActualizacion
+        ultimaActualizacion = this.ultimaActualizacion,
+        activo = this.activo
     )
 }
 
@@ -32,7 +34,8 @@ fun ProductoDTO.toDomain(): Producto {
         categoria = this.categoria,
         precio = this.precio,
         cantidadAñadida = this.cantidadAñadida,
-        ultimaActualizacion = this.ultimaActualizacion
+        ultimaActualizacion = this.ultimaActualizacion,
+        activo = this.activo
     )
 }
 
@@ -44,7 +47,8 @@ fun Producto.toDTO(): ProductoDTO {
         categoria = this.categoria,
         precio = this.precio,
         cantidadAñadida = this.cantidadAñadida,
-        ultimaActualizacion = this.ultimaActualizacion
+        ultimaActualizacion = this.ultimaActualizacion,
+        activo = this.activo
     )
 }
 

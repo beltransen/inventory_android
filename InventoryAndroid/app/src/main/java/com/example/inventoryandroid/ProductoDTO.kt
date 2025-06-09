@@ -7,5 +7,6 @@ data class ProductoDTO(
     val categoria: Int,
     val precio: Float,
     val cantidadAñadida: Int,
-    val ultimaActualizacion: Long
+    val ultimaActualizacion: Long,
+    val activo: Int
 )

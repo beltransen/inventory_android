@@ -33,15 +33,18 @@ class ProductoRepository(private val DAO: ProductoDAO, private val API: Producto
     }
 
     suspend fun delProducto(productoEntity: ProductoEntity) {
-        DAO.delete(productoEntity)
-        productoEntity.productoId?.let {
-            if (isConnected) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        API.delete(it)
-                    } catch (e: Exception) {
-                        Log.e("ProductoRepository", "Error eliminando en API", e)
-                    }
+        val updatedProducto = productoEntity.copy(
+            activo = 0,
+            ultimaActualizacion = System.currentTimeMillis()
+        )
+        DAO.desactivar(productoEntity.productoId, productoEntity.ultimaActualizacion)
+        // Si hay conexión, actualizamos en la API remota
+        if (isConnected && updatedProducto.productoId != null) {
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    API.update(updatedProducto.toDomain().productoId, updatedProducto.toDomain().toDTO())
+                } catch (e: Exception) {
+                    Log.e("ProductoRepository", "Error actualizando producto como inactivo en API", e)
                 }
             }
         }
@@ -72,40 +75,40 @@ class ProductoRepository(private val DAO: ProductoDAO, private val API: Producto
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // 1. Obtener productos del servidor
+                // 1. Obtener productos remotos (ya filtrados solo activos)
                 val productosRemotos = API.getAll().map { it.toDomain() }
 
-                // 2. Obtener productos locales
+                // 2. Obtener productos locales, activos o no
                 val productosLocales = DAO.getAllNow().map { it.toDomain() }
 
-                // 3. Crear un mapa local por ID
                 val mapaLocales = productosLocales.associateBy { it.productoId }
+                val mapaRemotos = productosRemotos.associateBy { it.productoId }
 
-                // 4. Iterar por cada producto remoto
+                // 3. Actualizar registros existentes
                 for (remoto in productosRemotos) {
                     val local = mapaLocales[remoto.productoId]
                     when {
-                        // No existe localmente → insertar
-                        local == null -> DAO.insert(remoto.toEntity())
-
-                        // Existe localmente y el remoto es más reciente → reemplazar
-                        remoto.ultimaActualizacion > local.ultimaActualizacion -> {
-                            DAO.update(remoto.toEntity())
-                        }
-
-                        // Existe localmente y el local es más reciente → subir al servidor
+                        local == null -> DAO.insert(remoto.toEntity()) // nuevo remoto → insertar localmente
+                        remoto.ultimaActualizacion > local.ultimaActualizacion -> DAO.update(remoto.toEntity())
                         remoto.ultimaActualizacion < local.ultimaActualizacion -> {
-                            remoto.productoId?.let { id ->
-                                API.update(id, local.toDTO())
-                            }
+                            remoto.productoId?.let { id -> API.update(id, local.toDTO()) }
                         }
                     }
                 }
 
-                // 5. Subir productos locales que no existen en remoto
+                // 4. Subir productos locales que no existen en remoto y están activos
                 val idsRemotos = productosRemotos.mapNotNull { it.productoId }.toSet()
-                productosLocales.filter { it.productoId !in idsRemotos }.forEach {
+                productosLocales.filter {
+                    it.productoId !in idsRemotos && it.activo == 1
+                }.forEach {
                     API.insert(it.toDTO())
+                }
+
+                // 5. Desactivar remotamente los que están inactivos localmente
+                productosLocales.filter { it.activo == 0 }.forEach {
+                    it.productoId?.let { id ->
+                        API.update(id, it.toDTO())
+                    }
                 }
 
                 Log.d("ProductoRepository", "Sincronización bidireccional completada.")
@@ -114,6 +117,8 @@ class ProductoRepository(private val DAO: ProductoDAO, private val API: Producto
             }
         }
     }
+
+
 
 
 }

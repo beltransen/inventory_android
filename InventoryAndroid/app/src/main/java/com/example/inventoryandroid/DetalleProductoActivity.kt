@@ -109,7 +109,8 @@ class DetalleProductoActivity : AppCompatActivity() {
             categoria = categoriaId,
             precio = precioFloat,
             cantidadAñadida = cantidadInt,
-            ultimaActualizacion = System.currentTimeMillis()
+            ultimaActualizacion = System.currentTimeMillis() ,
+            activo = 1 // Activo por defecto al actualiizar
         )
 
         intent.putExtra("producto", nuevoProducto)

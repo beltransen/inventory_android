@@ -13,7 +13,8 @@ def create_table():
         precio REAL NOT NULL,
         categoria INTEGER NOT NULL,
         cantidadAñadida INTEGER NOT NULL,
-        ultimaActualizacion INTEGER NOT NULL  -- timestamp en long
+        ultimaActualizacion INTEGER NOT NULL,  -- timestamp en long
+        activo INTEGER NOT NULL DEFAULT 1
     )
     ''')
 

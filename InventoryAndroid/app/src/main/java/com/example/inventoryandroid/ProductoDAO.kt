@@ -15,17 +15,21 @@ interface ProductoDAO {
     @Update
     suspend fun update(contactoEntity: ProductoEntity)
 
-    @Delete
-    suspend fun delete(contactoEntity: ProductoEntity)
+    // Ya no se usa DELETE real
+    //@Delete
+    //suspend fun delete(contactoEntity: ProductoEntity)
 
-    @Query("SELECT * FROM producto_table")
+    @Query("UPDATE producto_table SET producto_activo = 0, producto_ultima_actualizacion = :timestamp WHERE productoId = :id")
+    suspend fun desactivar(id: Long, timestamp: Long)
+
+    @Query("SELECT * FROM producto_table WHERE producto_activo = 1")
     fun getAll(): LiveData<List<ProductoEntity>>
 
-    @Query("SELECT * FROM producto_table WHERE producto_nombre = :nombre")
+    @Query("SELECT * FROM producto_table WHERE producto_nombre = :nombre AND producto_activo = 1")
     fun getByName(nombre: String): LiveData<List<ProductoEntity>>
 
-    @Query("SELECT * FROM producto_table WHERE productoId = :id")
-    fun getById(id: Int): LiveData<ProductoEntity> // Método para obtener una tarea por su ID
+    @Query("SELECT * FROM producto_table WHERE productoId = :id AND producto_activo = 1")
+    fun getById(id: Int): LiveData<ProductoEntity>
 
     @Query("SELECT * FROM producto_table WHERE productoId = :codigo")
     fun getByCodigoBarras(codigo: Long): ProductoEntity?

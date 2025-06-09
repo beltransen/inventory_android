@@ -9,5 +9,6 @@ data class Producto(
     var categoria: Int,            // Correcto si categorizas por números (e.g., IDs de categorías).
     var precio: Float,             // Correcto para manejar precios, aunque Double también podría usarse para mayor precisión.
     var cantidadAñadida: Int,
-    var ultimaActualizacion: Long  // TimeStamp en milisegundos.
+    var ultimaActualizacion: Long,  // TimeStamp en milisegundos.
+    var activo: Int
 ) : Serializable

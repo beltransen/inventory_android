@@ -19,5 +19,7 @@ data class ProductoEntity (
     @ColumnInfo(name = "producto_organizacion")
     var cantidadAñadida: Int,
     @ColumnInfo(name = "producto_ultima_actualizacion")
-    var ultimaActualizacion: Long
+    var ultimaActualizacion: Long,
+    @ColumnInfo(name = "producto_activo")
+    var activo: Int = 1
 )

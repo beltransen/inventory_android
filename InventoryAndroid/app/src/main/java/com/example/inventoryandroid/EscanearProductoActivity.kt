@@ -100,7 +100,8 @@ class EscanearProductoActivity : AppCompatActivity() {
                     categoria = categoriaId,
                     precio = precioFloat,
                     cantidadAñadida = cantidadInt,
-                    ultimaActualizacion = System.currentTimeMillis()
+                    ultimaActualizacion = System.currentTimeMillis(),
+                    activo = 1
                 )
                 intent.putExtra("producto", producto)
                 setResult(Activity.RESULT_OK, intent)
