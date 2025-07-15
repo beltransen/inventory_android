@@ -1,5 +1,6 @@
 package com.example.inventoryandroid
 
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -22,4 +23,11 @@ interface ProductoApiService {
 
     @DELETE("productos/{id}")
     suspend fun delete(@Path("id") id: Long)
+
+    @Multipart
+    @POST("upload/{filename}")
+    suspend fun uploadImage(
+        @Path("filename") filename: String,
+        @Part image: MultipartBody.Part
+    ): Response<Map<String, String>>
 }

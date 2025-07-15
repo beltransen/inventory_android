@@ -60,11 +60,28 @@ class AdaptadorElementos (var data: List<Producto>, val clickListener: RVClickEv
         holder.txtCantidad.text = "Cantidad: ${producto.cantidadAñadida}"
         holder.txtPrecio.text = "Precio: $${producto.precio}"
 
-        // Cargar la imagen usando Glide
+        // Ruta base del servidor (puedes mover esto a una constante si prefieres)
+        val BASE_URL = "http://192.168.0.170:8000/images/"
+
+        // Ruta completa de la imagen
+        val imagenUrl = if (producto.foto.startsWith("http")) {
+            producto.foto
+        } else {
+            BASE_URL + producto.foto
+        }
+
+        // Cargar la imagen con Glide
         Glide.with(holder.itemView.context)
-            .load(producto.foto) // URL o recurso local
-            .placeholder(R.drawable.ic_placeholder_image) // Placeholder mientras carga la imagen
+            .load(imagenUrl)
+            .placeholder(R.drawable.ic_placeholder_image)
             .into(holder.imgProducto)
+
+
+        // Cargar la imagen usando Glide
+        //Glide.with(holder.itemView.context)
+        //    .load(producto.foto) // URL o recurso local
+        //    .placeholder(R.drawable.ic_placeholder_image) // Placeholder mientras carga la imagen
+        //    .into(holder.imgProducto)
 
     }
 

@@ -1,10 +1,18 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 import sqlite3
+import shutil
+import os
 from sql import create_table  # Asegúrate de que apunte a tu archivo sql.py
 
 create_table()
 
 app = FastAPI()
+
+# 🔧 Montar la carpeta "static" en la URL "/images"
+app.mount("/images", StaticFiles(directory="static"), name="images")
+
 
 def get_db():
     conn = sqlite3.connect('productos.db')
@@ -98,3 +106,20 @@ def delete_producto_logico(producto_id: int):
     conn.commit()
     conn.close()
     return {"message": "Producto marcado como inactivo"}
+
+# 🔄 NUEVO: subir imagen
+@app.post("/upload/{nombre}")
+async def upload_image(nombre: str, file: UploadFile = File(...)):
+    try:
+        ruta_dir = "static/productos"
+        os.makedirs(ruta_dir, exist_ok=True)
+        filepath = f"{ruta_dir}/{nombre}"
+
+        with open(filepath, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        print("📂 Guardando imagen en:", filepath)
+
+        return JSONResponse(content={"foto": f"productos/{nombre}"})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error subiendo imagen: {str(e)}")
+

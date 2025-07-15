@@ -20,6 +20,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.inventoryandroid.databinding.ActivityEscanearProductoBinding
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
@@ -31,6 +33,8 @@ class EscanearProductoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEscanearProductoBinding
     private lateinit var barcodeScanner: BarcodeScanningActivity
     private var fotoUri: String? = null // Variable para almacenar la URI de la foto seleccionada
+    private lateinit var viewModel: ListaProductosViewModel
+    private var codigoBarrasActual: String? = null
     private val categoriasMap = mapOf(
         "Electrónica" to 1,
         "Hogar" to 2,
@@ -45,7 +49,10 @@ class EscanearProductoActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarMiperfil)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         barcodeScanner = BarcodeScanningActivity()
+        viewModel = ViewModelProvider(this, ProductosViewModelFactory(applicationContext)).get(
+            ListaProductosViewModel::class.java)
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
+
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
@@ -74,16 +81,14 @@ class EscanearProductoActivity : AppCompatActivity() {
             obtenerCodigo.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
         }
 
-        // Botón para guardar el producto
         binding.botonSaveUsuario.setOnClickListener {
             val nombre = binding.NombreProducto.text.toString()
             val categoriaSeleccionada = binding.Categoria.selectedItem.toString()
-            val categoriaId = categoriasMap[categoriaSeleccionada] ?: 0 // ID de la categoría
+            val categoriaId = categoriasMap[categoriaSeleccionada] ?: 0
             val precio = binding.Precio.text.toString()
             val codigoBarras = binding.CodigoBarras.text.toString()
             val cantidad = binding.Cantidad.text.toString()
 
-            // Validaciones de campos vacíos y tipos
             val precioFloat = precio.toFloatOrNull()
             val cantidadInt = cantidad.toIntOrNull()
             val productoId = codigoBarras.toLongOrNull()
@@ -92,17 +97,24 @@ class EscanearProductoActivity : AppCompatActivity() {
                 precioFloat == null || cantidadInt == null || productoId == null) {
                 Toast.makeText(this, "Todos los campos deben estar rellenos correctamente", Toast.LENGTH_SHORT).show()
             } else {
-                // Si todoo está bien, crea el producto CHEEEEEEEEEEEEEEEEEEEEEEEECK
+                val nombreFoto = "$productoId.jpg"
+                val uri = Uri.parse(fotoUri)
+
+                // Subimos la imagen desde el ViewModel
+                viewModel.subirImagen(this, uri, nombreFoto)
+
+                // Creamos el producto (asumiendo que no necesitas esperar confirmación de subida)
                 val producto = Producto(
-                    productoId = productoId, // Si se ha escaneado un código válido
+                    productoId = productoId,
                     nombre = nombre,
-                    foto = fotoUri ?: "",
+                    foto = "productos/$nombreFoto",
                     categoria = categoriaId,
                     precio = precioFloat,
                     cantidadAñadida = cantidadInt,
                     ultimaActualizacion = System.currentTimeMillis(),
                     activo = 1
                 )
+
                 intent.putExtra("producto", producto)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
@@ -175,7 +187,8 @@ class EscanearProductoActivity : AppCompatActivity() {
     }
 
     private fun saveImageToInternalStorage(bitmap: Bitmap): Uri {
-        val file = File(filesDir, "image_${System.currentTimeMillis()}.jpg")
+        val fileName = "${codigoBarrasActual ?: System.currentTimeMillis()}.jpg"
+        val file = File(filesDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
         }
@@ -219,7 +232,8 @@ class EscanearProductoActivity : AppCompatActivity() {
     }
 
     private fun saveImageToCache(bitmap: Bitmap): Uri {
-        val file = File(cacheDir, "captured_image_${System.currentTimeMillis()}.jpg")
+        val fileName = "${codigoBarrasActual ?: System.currentTimeMillis()}.jpg"
+        val file = File(filesDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
         }

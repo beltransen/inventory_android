@@ -1,6 +1,7 @@
 package com.example.inventoryandroid
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -29,6 +30,16 @@ class ListaProductosViewModel(context: Context): ViewModel() {
             }
         }
 
+    }
+
+    fun subirImagen(context: Context, uri: Uri, nombreFoto: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                productosRepository.subirImagen(uri, nombreFoto, context)
+            } catch (e: Exception) {
+                Log.e("ViewModel", "Error al subir la imagen: ${e.message}")
+            }
+        }
     }
 
     fun deleteProducto(contacto: Producto) {

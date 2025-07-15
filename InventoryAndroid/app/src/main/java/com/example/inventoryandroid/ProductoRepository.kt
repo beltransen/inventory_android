@@ -1,11 +1,14 @@
 package com.example.inventoryandroid
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 class ProductoRepository(private val DAO: ProductoDAO, private val API: ProductoApiService)  {
     fun getAllProductos(): LiveData<List<Producto>> = DAO.getAll().map { listaProductos ->
@@ -29,6 +32,27 @@ class ProductoRepository(private val DAO: ProductoDAO, private val API: Producto
                     Log.e("ProductoRepository", "Error insertando en API", e)
                 }
             }
+        }
+    }
+
+    suspend fun subirImagen(fotoUri: Uri, nombre: String, context: Context) {
+        val contentResolver = context.contentResolver
+        val inputStream = contentResolver.openInputStream(fotoUri)
+        val requestBody = inputStream?.readBytes()?.let {
+            okhttp3.RequestBody.create(okhttp3.MediaType.parse("image/*"), it)
+        } ?: return
+
+        val part = MultipartBody.Part.createFormData("file", nombre, requestBody)
+
+        try {
+            val response = API.uploadImage(nombre, part)
+            if (response.isSuccessful) {
+                Log.d("ProductoRepository", "Imagen subida con éxito")
+            } else {
+                Log.e("ProductoRepository", "Error subiendo imagen: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            Log.e("ProductoRepository", "Excepción subiendo imagen", e)
         }
     }
 

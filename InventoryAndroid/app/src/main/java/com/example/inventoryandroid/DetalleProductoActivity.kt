@@ -23,6 +23,7 @@ import java.io.File
 class DetalleProductoActivity : AppCompatActivity() {
     lateinit var binding: ActivityDetalleProductoBinding
     private var fotoUri: String? = null
+    private var codigoBarrasActual: String? = null
     private lateinit var barcodeScanner: BarcodeScanningActivity
     lateinit var viewModel: ListaProductosViewModel
 
@@ -154,7 +155,8 @@ class DetalleProductoActivity : AppCompatActivity() {
     }
 
     private fun saveImageToInternalStorage(bitmap: Bitmap): Uri {
-        val file = File(filesDir, "image_${System.currentTimeMillis()}.jpg")
+        val fileName = "${codigoBarrasActual ?: System.currentTimeMillis()}.jpg"
+        val file = File(filesDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
         }
@@ -182,7 +184,10 @@ class DetalleProductoActivity : AppCompatActivity() {
         val image = InputImage.fromBitmap(imageBitmap, 0)
         barcodeScanner.scanBarcodes(image, object : BarcodeScanningActivity.BarcodeScanListener {
             override fun onRawValueDetected(rawValue: String?) {
-                rawValue?.let { binding.CodigoBarras.setText(it) }
+                rawValue?.let {
+                    binding.CodigoBarras.setText(it)
+                    codigoBarrasActual = it
+                }
             }
 
             override fun onBarcodeScanFailed(exception: Exception) {
@@ -197,8 +202,11 @@ class DetalleProductoActivity : AppCompatActivity() {
     }
 
     private fun saveImageToCache(bitmap: Bitmap): Uri {
-        val file = File(cacheDir, "captured_image_${System.currentTimeMillis()}.jpg")
-        file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it) }
+        val fileName = "${codigoBarrasActual ?: System.currentTimeMillis()}.jpg"
+        val file = File(filesDir, fileName)
+        file.outputStream().use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
+        }
         return Uri.fromFile(file)
     }
 
