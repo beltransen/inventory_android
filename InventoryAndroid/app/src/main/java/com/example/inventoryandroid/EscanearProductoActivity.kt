@@ -156,7 +156,7 @@ class EscanearProductoActivity : AppCompatActivity() {
                 binding.ImagenPreview.setImageBitmap(imageBitmap)
 
                 // Opcional: Guarda la foto en el almacenamiento local o en una variable
-                val uri = saveImageToCache(imageBitmap)
+                val uri = saveImageToCache(imageBitmap, binding.CodigoBarras.text.toString())
                 fotoUri = uri.toString()
             } else {
                 Toast.makeText(this, "Error al capturar la foto", Toast.LENGTH_SHORT).show()
@@ -174,7 +174,7 @@ class EscanearProductoActivity : AppCompatActivity() {
                     binding.ImagenPreview.setImageBitmap(bitmap) // Muestra la vista previa de la imagen
 
                     // Guardar el bitmap en almacenamiento interno
-                    val nuevaUri = saveImageToInternalStorage(bitmap)
+                    val nuevaUri = saveImageToInternalStorage(bitmap, binding.CodigoBarras.text.toString())
                     fotoUri = nuevaUri.toString()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -186,8 +186,8 @@ class EscanearProductoActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImageToInternalStorage(bitmap: Bitmap): Uri {
-        val fileName = "${codigoBarrasActual ?: System.currentTimeMillis()}.jpg"
+    private fun saveImageToInternalStorage(bitmap: Bitmap, codigoBarras: String): Uri {
+        val fileName = "${codigoBarras}.jpg"
         val file = File(filesDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
@@ -231,8 +231,8 @@ class EscanearProductoActivity : AppCompatActivity() {
         return true
     }
 
-    private fun saveImageToCache(bitmap: Bitmap): Uri {
-        val fileName = "${codigoBarrasActual ?: System.currentTimeMillis()}.jpg"
+    private fun saveImageToCache(bitmap: Bitmap, codigoBarras: String): Uri {
+        val fileName = "${codigoBarras}.jpg"
         val file = File(filesDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)

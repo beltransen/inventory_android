@@ -186,7 +186,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Llama a setConnectionState y sincronizarBidireccional
                 viewModel.setConexionActiva(true)
-                viewModel.sincronizarConServidor()
+                viewModel.sincronizarConServidor(this)
             } else {
                 Log.d("NetworkChange", "Sin conexión")
                 Toast.makeText(this, "Sin conexión a Internet", Toast.LENGTH_SHORT).show()
@@ -195,6 +195,9 @@ class MainActivity : AppCompatActivity() {
 
             // Opcional: actualizar estado en el ViewModel si lo necesitas
             viewModel.setConexionActiva(isConnected)
+
+            // 👉 Aquí es donde avisas al adaptador
+            miAdaptador.setConnectionState(isConnected)
         }
 
         val filter = android.content.IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION)

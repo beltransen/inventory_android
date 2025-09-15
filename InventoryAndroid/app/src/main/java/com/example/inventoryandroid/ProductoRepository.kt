@@ -94,51 +94,66 @@ class ProductoRepository(private val DAO: ProductoDAO, private val API: Producto
         return productoEntity?.toDomain()
     }
 
-    fun sincronizarBidireccional() {
+    suspend fun sincronizarBidireccional(context: Context? = null) {
         if (!isConnected) return
 
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // 1. Obtener productos remotos (ya filtrados solo activos)
-                val productosRemotos = API.getAll().map { it.toDomain() }
+        try {
+            // 1. Obtener productos remotos
+            val productosRemotos = API.getAll().map { it.toDomain() }
 
-                // 2. Obtener productos locales, activos o no
-                val productosLocales = DAO.getAllNow().map { it.toDomain() }
+            // 2. Obtener productos locales
+            val productosLocales = DAO.getAllNow().map { it.toDomain() }
 
-                val mapaLocales = productosLocales.associateBy { it.productoId }
-                val mapaRemotos = productosRemotos.associateBy { it.productoId }
+            val mapaLocales = productosLocales.associateBy { it.productoId }
+            val mapaRemotos = productosRemotos.associateBy { it.productoId }
 
-                // 3. Actualizar registros existentes
-                for (remoto in productosRemotos) {
-                    val local = mapaLocales[remoto.productoId]
-                    when {
-                        local == null -> DAO.insert(remoto.toEntity()) // nuevo remoto → insertar localmente
-                        remoto.ultimaActualizacion > local.ultimaActualizacion -> DAO.update(remoto.toEntity())
-                        remoto.ultimaActualizacion < local.ultimaActualizacion -> {
-                            remoto.productoId?.let { id -> API.update(id, local.toDTO()) }
+            // 3. Actualizar registros existentes
+            for (remoto in productosRemotos) {
+                val local = mapaLocales[remoto.productoId]
+                when {
+                    local == null -> DAO.insert(remoto.toEntity()) // nuevo remoto → insertar localmente
+                    remoto.ultimaActualizacion > local.ultimaActualizacion -> DAO.update(remoto.toEntity())
+                    remoto.ultimaActualizacion < local.ultimaActualizacion -> {
+                        remoto.productoId?.let { id ->
+                            API.update(id, local.toDTO())
+
+                            // Subir imagen si hay context y foto local
+                            if (context != null && local.foto.isNotEmpty()) {
+                                val uri = Uri.parse(local.foto)
+                                subirImagen(uri, "${id}.jpg", context)
+                            }
                         }
                     }
                 }
+            }
 
-                // 4. Subir productos locales que no existen en remoto y están activos
-                val idsRemotos = productosRemotos.mapNotNull { it.productoId }.toSet()
-                productosLocales.filter {
-                    it.productoId !in idsRemotos && it.activo == 1
-                }.forEach {
-                    API.insert(it.toDTO())
-                }
+            // 4. Subir productos locales que no existen en remoto
+            val idsRemotos = productosRemotos.mapNotNull { it.productoId }.toSet()
+            productosLocales.filter {
+                it.productoId !in idsRemotos && it.activo == 1
+            }.forEach {
 
-                // 5. Desactivar remotamente los que están inactivos localmente
-                productosLocales.filter { it.activo == 0 }.forEach {
+
+                // Subir imagen si hay context
+                if (context != null && it.foto.isNotEmpty()) {
+                    val uri = Uri.parse(it.foto)
                     it.productoId?.let { id ->
-                        API.update(id, it.toDTO())
+                        subirImagen(uri, "${id}.jpg", context)
                     }
                 }
-
-                Log.d("ProductoRepository", "Sincronización bidireccional completada.")
-            } catch (e: Exception) {
-                Log.e("ProductoRepository", "Error en sincronización bidireccional", e)
+                API.insert(it.toDTO())
             }
+
+            // 5. Desactivar remotamente los que están inactivos localmente
+            productosLocales.filter { it.activo == 0 }.forEach {
+                it.productoId?.let { id ->
+                    API.update(id, it.toDTO())
+                }
+            }
+
+            Log.d("ProductoRepository", "Sincronización bidireccional completada.")
+        } catch (e: Exception) {
+            Log.e("ProductoRepository", "Error en sincronización bidireccional", e)
         }
     }
 

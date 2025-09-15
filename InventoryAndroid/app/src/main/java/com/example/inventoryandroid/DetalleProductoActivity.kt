@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.bumptech.glide.signature.ObjectKey
 import com.example.inventoryandroid.databinding.ActivityDetalleProductoBinding
 import com.google.mlkit.vision.common.InputImage
 import java.io.File
@@ -56,11 +57,28 @@ class DetalleProductoActivity : AppCompatActivity() {
             binding.Cantidad.setText(producto.cantidadAñadida.toString())
 
             fotoUri = producto.foto
-            Glide.with(this)
-                .load(fotoUri)
-                .placeholder(R.drawable.ic_placeholder_image)
-                .error(R.drawable.ic_placeholder_image)
-                .into(binding.ImagenPreview)
+
+            val codigo = binding.CodigoBarras.text.toString()
+            val file = File(filesDir, "$codigo.jpg")
+
+            if (file.exists()) {
+                // Imagen local (cache busting con lastModified)
+                Glide.with(this)
+                    .load(file)
+                    .signature(ObjectKey(file.lastModified()))
+                    .placeholder(R.drawable.ic_placeholder_image)
+                    .error(R.drawable.ic_placeholder_image)
+                    .into(binding.ImagenPreview)
+            } else {
+                // Imagen remota si existe en servidor
+                val BASE_URL = "http://192.168.0.170:8000/images/"
+                Glide.with(this)
+                    .load(BASE_URL + (fotoUri ?: ""))
+                    .placeholder(R.drawable.ic_placeholder_image)
+                    .error(R.drawable.ic_placeholder_image)
+                    .into(binding.ImagenPreview)
+            }
+
 
             val categorias = categoriasMap.keys.toList()
             val categoriaSeleccionada = categoriasMap.entries.find { it.value == producto.categoria }?.key
@@ -142,7 +160,7 @@ class DetalleProductoActivity : AppCompatActivity() {
                     binding.ImagenPreview.setImageBitmap(bitmap) // Muestra la vista previa de la imagen
 
                     // Guardar el bitmap en almacenamiento interno
-                    val nuevaUri = saveImageToInternalStorage(bitmap)
+                    val nuevaUri = saveImageToInternalStorage(bitmap,binding.CodigoBarras.text.toString())
                     fotoUri = nuevaUri.toString()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -154,8 +172,8 @@ class DetalleProductoActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImageToInternalStorage(bitmap: Bitmap): Uri {
-        val fileName = "${codigoBarrasActual ?: System.currentTimeMillis()}.jpg"
+    private fun saveImageToInternalStorage(bitmap: Bitmap, codigoBarras: String): Uri {
+        val fileName = "${codigoBarras}.jpg"
         val file = File(filesDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
@@ -165,11 +183,19 @@ class DetalleProductoActivity : AppCompatActivity() {
 
     private val obtenerFoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
-            val imageBitmap = result.data?.extras?.get("data") as? Bitmap
-            imageBitmap?.let {
-                fotoUri = saveImageToCache(it).toString()
-                binding.ImagenPreview.setImageBitmap(it)
-            } ?: Toast.makeText(this, "Error al capturar la foto", Toast.LENGTH_SHORT).show()
+            val data: Intent? = result.data
+            val imageBitmap = data?.extras?.get("data") as? Bitmap
+            if (imageBitmap != null) {
+                // Muestra la imagen capturada en el ImageView
+                binding.ImagenPreview.scaleType = ImageView.ScaleType.FIT_CENTER
+                binding.ImagenPreview.setImageBitmap(imageBitmap)
+
+                // Opcional: Guarda la foto en el almacenamiento local o en una variable
+                val uri = saveImageToCache(imageBitmap, binding.CodigoBarras.text.toString())
+                fotoUri = uri.toString()
+            } else {
+                Toast.makeText(this, "Error al capturar la foto", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -201,8 +227,8 @@ class DetalleProductoActivity : AppCompatActivity() {
         return true
     }
 
-    private fun saveImageToCache(bitmap: Bitmap): Uri {
-        val fileName = "${codigoBarrasActual ?: System.currentTimeMillis()}.jpg"
+    private fun saveImageToCache(bitmap: Bitmap, codigoBarras: String): Uri {
+        val fileName = "${codigoBarras}.jpg"
         val file = File(filesDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)

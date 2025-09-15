@@ -82,13 +82,9 @@ class ListaProductosViewModel(context: Context): ViewModel() {
         conexionActiva = conectado
     }
 
-    fun isConexionActiva(): Boolean {
-        return conexionActiva
-    }
-
-    fun sincronizarConServidor() {
+    fun sincronizarConServidor(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            productosRepository.sincronizarBidireccional()
+            productosRepository.sincronizarBidireccional(context)
         }
     }
 }

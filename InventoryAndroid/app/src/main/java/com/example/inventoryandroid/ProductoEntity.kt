@@ -10,13 +10,13 @@ data class ProductoEntity (
     val productoId: Long,  // Ahora es la clave primaria
     @ColumnInfo(name = "producto_nombre")
     val nombre: String,
-    @ColumnInfo(name = "producto_apellidos")
+    @ColumnInfo(name = "producto_foto")
     val foto: String,
-    @ColumnInfo(name = "producto_telefono")
+    @ColumnInfo(name = "producto_categoria")
     var categoria: Int,
-    @ColumnInfo(name = "producto_email")
+    @ColumnInfo(name = "producto_precio")
     var precio: Float,
-    @ColumnInfo(name = "producto_organizacion")
+    @ColumnInfo(name = "producto_cantidad")
     var cantidadAñadida: Int,
     @ColumnInfo(name = "producto_ultima_actualizacion")
     var ultimaActualizacion: Long,
