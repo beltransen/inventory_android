@@ -73,13 +73,13 @@ class AdaptadorElementos(
         holder.txtPrecio.text = "Precio: $${producto.precio}"
 
         val BASE_URL = "http://192.168.0.170:8000/images/"
-        val BASE_URL2 = "/data/data/com.example.inventoryandroid/files/"
+        val BASE_URL2 = "/data/data/com.example.inventoryandroid/"
         // Elegir la ruta según si hay conexión
         Log.d("NetworkChange", producto.foto)
         val imagenUrl = if (isConnected) {
             BASE_URL + producto.foto
         } else {
-            BASE_URL2 + producto.foto.substringAfterLast("/") // desde servidor        // asumimos que aquí está la ruta local
+            BASE_URL2 + producto.foto // desde servidor        // asumimos que aquí está la ruta local
         }
         Log.d("NetworkChange", imagenUrl)
         Glide.with(holder.itemView.context)

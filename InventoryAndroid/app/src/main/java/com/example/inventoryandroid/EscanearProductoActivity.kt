@@ -188,7 +188,14 @@ class EscanearProductoActivity : AppCompatActivity() {
 
     private fun saveImageToInternalStorage(bitmap: Bitmap, codigoBarras: String): Uri {
         val fileName = "${codigoBarras}.jpg"
-        val file = File(filesDir, fileName)
+        // Directorio raíz de la app (/data/data/tu.paquete)
+        val rootDir = applicationContext.dataDir
+        val productosDir = File(rootDir, "productos")
+        //val file = File(filesDir, fileName)
+        if (!productosDir.exists()) {
+            productosDir.mkdirs()
+        }
+        val file = File(productosDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
         }
@@ -233,7 +240,14 @@ class EscanearProductoActivity : AppCompatActivity() {
 
     private fun saveImageToCache(bitmap: Bitmap, codigoBarras: String): Uri {
         val fileName = "${codigoBarras}.jpg"
-        val file = File(filesDir, fileName)
+        // Directorio raíz de la app (/data/data/tu.paquete)
+        val rootDir = applicationContext.dataDir
+        val productosDir = File(rootDir, "productos")
+        //val file = File(filesDir, fileName)
+        if (!productosDir.exists()) {
+            productosDir.mkdirs()
+        }
+        val file = File(productosDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
         }

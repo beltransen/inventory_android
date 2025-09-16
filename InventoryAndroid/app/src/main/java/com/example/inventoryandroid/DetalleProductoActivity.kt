@@ -58,13 +58,19 @@ class DetalleProductoActivity : AppCompatActivity() {
 
             fotoUri = producto.foto
 
+
             val codigo = binding.CodigoBarras.text.toString()
-            val file = File(filesDir, "$codigo.jpg")
+            val fileName = "${codigo}.jpg"
+            binding.CodigoBarras.text.toString()
+            val rootDir = applicationContext.dataDir
+            val productosDir = File(rootDir, "productos")
+            val file = File(productosDir, fileName)
 
             if (file.exists()) {
+                val BASE_URL2 = "/data/data/com.example.inventoryandroid/"
                 // Imagen local (cache busting con lastModified)
                 Glide.with(this)
-                    .load(file)
+                    .load(BASE_URL2 + (fotoUri ?: ""))
                     .signature(ObjectKey(file.lastModified()))
                     .placeholder(R.drawable.ic_placeholder_image)
                     .error(R.drawable.ic_placeholder_image)
@@ -120,11 +126,12 @@ class DetalleProductoActivity : AppCompatActivity() {
             Toast.makeText(this, "Todos los campos deben estar rellenos correctamente", Toast.LENGTH_SHORT).show()
             return
         }
+        val nombreFoto = "$productoId.jpg"
 
         val nuevoProducto = Producto(
             productoId = productoId,
             nombre = nombre,
-            foto = fotoUri ?: "",
+            foto = "productos/$nombreFoto",
             categoria = categoriaId,
             precio = precioFloat,
             cantidadAñadida = cantidadInt,
@@ -174,7 +181,14 @@ class DetalleProductoActivity : AppCompatActivity() {
 
     private fun saveImageToInternalStorage(bitmap: Bitmap, codigoBarras: String): Uri {
         val fileName = "${codigoBarras}.jpg"
-        val file = File(filesDir, fileName)
+        // Directorio raíz de la app (/data/data/tu.paquete)
+        val rootDir = applicationContext.dataDir
+        val productosDir = File(rootDir, "productos")
+        //val file = File(filesDir, fileName)
+        if (!productosDir.exists()) {
+            productosDir.mkdirs()
+        }
+        val file = File(productosDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
         }
@@ -229,7 +243,14 @@ class DetalleProductoActivity : AppCompatActivity() {
 
     private fun saveImageToCache(bitmap: Bitmap, codigoBarras: String): Uri {
         val fileName = "${codigoBarras}.jpg"
-        val file = File(filesDir, fileName)
+        // Directorio raíz de la app (/data/data/tu.paquete)
+        val rootDir = applicationContext.dataDir
+        val productosDir = File(rootDir, "productos")
+        //val file = File(filesDir, fileName)
+        if (!productosDir.exists()) {
+            productosDir.mkdirs()
+        }
+        val file = File(productosDir, fileName)
         file.outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
         }

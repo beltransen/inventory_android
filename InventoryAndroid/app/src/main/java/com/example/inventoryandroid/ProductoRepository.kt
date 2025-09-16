@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
+import java.io.File
 
 class ProductoRepository(private val DAO: ProductoDAO, private val API: ProductoApiService)  {
     fun getAllProductos(): LiveData<List<Producto>> = DAO.getAll().map { listaProductos ->
@@ -94,6 +95,17 @@ class ProductoRepository(private val DAO: ProductoDAO, private val API: Producto
         return productoEntity?.toDomain()
     }
 
+    private fun getLocalImageUri(context: Context, foto: String, id: Long): Uri? {
+        return if (foto.startsWith("file://")) {
+            Uri.parse(foto) // ya es ruta completa
+        } else {
+            val rootDir = context.dataDir
+            val productosDir = File(rootDir, "productos")
+            val file = File(productosDir, "${id}.jpg")
+            if (file.exists()) Uri.fromFile(file) else null
+        }
+    }
+
     suspend fun sincronizarBidireccional(context: Context? = null) {
         if (!isConnected) return
 
@@ -134,11 +146,12 @@ class ProductoRepository(private val DAO: ProductoDAO, private val API: Producto
             }.forEach {
 
 
-                // Subir imagen si hay context
                 if (context != null && it.foto.isNotEmpty()) {
-                    val uri = Uri.parse(it.foto)
-                    it.productoId?.let { id ->
-                        subirImagen(uri, "${id}.jpg", context)
+                    val uri = getLocalImageUri(context, it.foto, it.productoId)
+                    if (uri != null) {
+                        subirImagen(uri, "${it.productoId}.jpg", context)
+                    } else {
+                        Log.w("ProductoRepository", "No se encontró imagen local para producto $it.productoId")
                     }
                 }
                 API.insert(it.toDTO())
